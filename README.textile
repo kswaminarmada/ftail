@@ -1,4 +1,4 @@
-h1. ftail (custome tail command for Fluentd File output plugin)
+h1. ftail (custom tail command for Fluentd File output plugin)
 
 
 h2. Installation
