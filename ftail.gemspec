@@ -1,7 +1,7 @@
 Gem::Specification.new do |gem|
   gem.name              = 'ftail'
-  gem.version           = '0.0.1'
-  gem.summary           = 'ftail is a custom tail command for flutne-plugin-file'
+  gem.version           = '0.0.2'
+  gem.summary           = 'ftail is a custom tail command for Fluentd File output plugin'
   gem.files             = `git ls-files`.split($\)
   gem.executables       = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files        = gem.files.grep(%r{^(test|spec|features)/})
