@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "eventmachine"
+require "eventmachine-tail"
+require "json"
+require "io/console"
+require "optparse"
+require "pp"
+
+class Reader < EventMachine::FileTail
+  def initialize(path, startpos=-1)
+    super(path, startpos)
+    puts "Tailing #{path}"
+    @buffer = BufferedTokenizer.new
+  end
+
+  def receive_data(data)
+    @buffer.extract(data).each do |line|
+      if /^(\S*)\s(\S*)\s(.*)$/=~ line
+        time = $1
+        tag = $2
+        records_string = $3
+
+        tag = grep(tag, $options[:grep]) || next
+        tag = grepv(tag, $options[:grepv])  || next
+
+        begin
+          records = JSON.parse(records_string)
+        rescue
+          records = records_string
+        end
+        
+        puts time + "\t" + "\e[34m#{tag}\e[0m" 
+        pp records
+        puts '-' * IO.console.winsize[1]
+      end
+    end
+  end
+
+  def grep(inputword,grepwords)
+    if grepwords
+      flg = false
+      grepwords.each do |grepword|
+        if /.*#{grepword}.*/=~inputword
+          flg = true
+        end
+      end
+      unless flg
+        return false
+      end
+    end
+    return inputword
+  end
+
+  def grepv(inputword,grepvwords)
+    if grepvwords
+      flg = false
+      grepvwords.each do |grepvword|
+        if /.*#{grepvword}.*/=~inputword
+          flg = true
+        end
+      end
+      if flg
+        return false
+      end
+    end
+    return inputword
+  end
+end
+
+
+def main(args)
+  $options = Hash.new
+
+  optparse = OptionParser.new
+  
+  optparse.on('--grep [grep1,grep2]')  {|v|
+    $options[:grep] = v.split(',') 
+  }
+  optparse.on('--grepv ') {|v|
+    $options[:grepv] = v.split(',')
+  }
+
+  optparse.permute!(args)
+
+  if args.length == 0
+    puts "Usage: #{$0} <path> [path2] [...]"
+    return 1
+  end
+
+  EventMachine.run do
+    args.each do |path|
+      EventMachine::file_tail(path, Reader)
+    end
+  end
+end
+
+exit(main(ARGV))
+
+

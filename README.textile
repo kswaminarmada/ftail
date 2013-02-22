@@ -1,0 +1,44 @@
+h1. ftail (custome tail command for Fluentd File output plugin)
+
+
+h2. Installation
+
+install it yourself as:
+
+<pre>
+$ gem install ftail
+</pre>
+
+
+h2. Usage
+
+command example:
+
+<pre>
+$ ftail <filename>
+$ ftail --grep [match-word] <filename>
+$ ftail --grepv [invert-match-word] <filename>
+$ ftail --grep [word] --grepv [word] <filename>
+$ ftail <filename> --grep [word]
+</pre>
+
+
+grep example:
+
+<pre>
+$ tail /var/log/td-agent/td-agent_fileoutput.log
+2013-02-22T12:37:01Z    fluent.info {"message"=>"", "date"=>2013-02-22T12:37:00Z}
+2013-02-22T12:37:02Z    fluent.info {"message"=>"", "date"=>2013-02-22T12:37:01Z}
+
+$ ftail /var/log/td-agent/td-agent_fileoutput.log
+Tailing /var/log/td-agent/td-agent_fileoutput.log
+2013-02-22T12:37:01Z    fluent.info
+{"message"=>"",
+ "date"=>2013-02-22T12:37:00Z}
+----------------------------------------------------------------------------------------------------------------------------------------
+2013-02-22T12:37:02Z    fluent.info
+{"message"=>"",
+ "date"=>2013-02-22T12:37:01Z}
+----------------------------------------------------------------------------------------------------------------------------------------
+</pre>
+
